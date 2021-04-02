@@ -30,3 +30,12 @@ ipython_config.py
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# IntellijIdea files
+*.iml
+.idea
+out
