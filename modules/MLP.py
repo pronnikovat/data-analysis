@@ -1,70 +1,93 @@
 import numpy as np
 
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+class Sigmoid:
+    @staticmethod
+    def activation(z):
+        return 1 / (1 + np.exp(-z))
+
+    @staticmethod
+    def prime(z):
+        return Sigmoid.activation(z) * (1 - Sigmoid.activation(z))
 
 
-def softmax(x):
-    eps = 1e-8
-    out = np.exp(x - np.max(x, axis=1).reshape(-1, 1))
-    return out / (np.sum(out, axis=1).reshape(-1, 1) + eps)
+class Relu:
+    @staticmethod
+    def activation(z):
+        return np.maximum(z, 0)
+
+    @staticmethod
+    def prime(z):
+        return np.where(Relu.activation(z) < 0, 0, 1)
 
 
-class MLP():
-    def __init__(self, features, labels):
-        self.D_in, self.H1, self.H2, self.D_out = features, 100, 50, labels
-        self.epochs, self.batch_size = 200, 32
-        self.learning_rate = 1e-2
+class MSE:
+    def __init__(self, activation_fn):
+        self.activation_fn = activation_fn
 
-        # Произвольно инициализируем веса
-        self.w1 = np.random.randn(self.D_in, self.H1)
-        self.w2 = np.random.randn(self.H1, self.H2)
-        self.w3 = np.random.randn(self.H2, self.D_out)
+    def activation(self, z):
+        return self.activation_fn.activation(z)
 
-        self.b1 = np.random.randn(1, self.H1)
-        self.b2 = np.random.randn(1, self.H2)
-        self.b3 = np.random.randn(1, self.D_out)
+    @staticmethod
+    def loss(y_true, y_pred):
+        return np.mean((y_pred - y_true) ** 2)
 
-    def predict(self, x):
-        a1 = sigmoid(x.dot(self.w1) + self.b1)
-        a2 = sigmoid(a1.dot(self.w2) + self.b2)
-        return softmax(a2.dot(self.w3) + self.b3)
+    @staticmethod
+    def prime(y_true, y_pred):
+        return y_pred - y_true
 
-    def fit(self, x_train, labels):
-        train_num = x_train.shape[0]
-        bvec = np.ones((1, self.batch_size))
 
-        y_train = np.zeros((train_num, self.D_out))
-        y_train[np.arange(train_num), labels] = 1
+class MLP:
+    def __init__(self, layers, activation_functions):
+        self.layers = layers
+        self.n_layers = len(layers)
+        self.loss_func = None
+        self.learning_rate = None
+        self.activ_func = activation_functions
+        self.w = {}
+        self.b = {}
+        self.activation_functions = {}
+        for i in range(len(layers) - 1):
+            self.w[i + 1] = np.random.randn(layers[i], layers[i + 1]) / np.sqrt(layers[i])
+            self.b[i + 1] = np.zeros(layers[i + 1])
+            self.activation_functions[i + 2] = activation_functions[i]
 
-        for epoch in range(self.epochs):
-            permut = np.random.permutation(
-                train_num // self.batch_size * self.batch_size).reshape(-1, self.batch_size)
-            for b_idx in range(permut.shape[0]):
-                x, y = x_train[permut[b_idx, :]], y_train[permut[b_idx, :]]
+    def feed_forward(self, X):
+        z = {}
+        a = {1: X}
+        for i in range(1, self.n_layers):
+            z[i + 1] = np.dot(a[i], self.w[i]) + self.b[i]
+            a[i + 1] = self.activation_functions[i + 1].activation(z[i + 1])
+        return z, a
 
-                # Вычисляем прогнозируемое значение y
-                a1 = sigmoid(x.dot(self.w1) + self.b1)
-                a2 = sigmoid(a1.dot(self.w2) + self.b2)
-                out = softmax(a2.dot(self.w3) + self.b3)
+    def predict(self, X):
+        _, a = self.feed_forward(X)
+        return a[self.n_layers]
 
-                # Считаем градиенты весов
-                grad_out = out - y
-                grad_w3 = a2.T.dot(grad_out)
+    def back_prop(self, z, a, y):
+        back_prop_error = self.loss_func.prime(y, a[self.n_layers]) * self.activ_func[-1].prime(a[self.n_layers])
+        dC_dw = np.dot(a[self.n_layers - 1].T, back_prop_error)
+        update_parameters = {
+            self.n_layers - 1: (dC_dw, back_prop_error)
+        }
+        for n in reversed(range(2, self.n_layers)):
+            back_prop_error = np.dot(back_prop_error, self.w[n].T) * self.activation_functions[n].prime(z[n])
+            dC_dw = np.dot(a[n - 1].T, back_prop_error)
+            update_parameters[n - 1] = (dC_dw, back_prop_error)
+        for i, update_param in update_parameters.items():
+            self.w[i] -= self.learning_rate * update_param[0]
+            self.b[i] -= self.learning_rate * np.mean(update_param[1], 0)
 
-                grad_a2 = grad_out.dot(self.w3.T)
-                grad_a2 = np.multiply(grad_a2, (a2 - np.square(a2)))
-                grad_w2 = a1.T.dot(grad_a2)
-
-                grad_a1 = grad_a2.dot(self.w2.T)
-                grad_a1 = np.multiply(grad_a1, (a1 - np.square(a1)))
-                grad_w1 = x.T.dot(grad_a1)
-
-                # Обновляем значения весов
-                self.w1 -= self.learning_rate * grad_w1
-                self.b1 -= self.learning_rate * bvec.dot(grad_a1)
-                self.w2 -= self.learning_rate * grad_w2
-                self.b2 -= self.learning_rate * bvec.dot(grad_a2)
-                self.w3 -= self.learning_rate * grad_w3
-                self.b3 -= self.learning_rate * bvec.dot(grad_out)
+    def fit(self, X_train, y_train, loss_func=MSE, epochs=10, batch_size=64, learning_rate=0.01):
+        self.loss_func = loss_func(self.activation_functions[self.n_layers])
+        self.learning_rate = learning_rate
+        for i in range(epochs):
+            seed = np.arange(X_train.shape[0])
+            np.random.shuffle(seed)
+            x_ex = X_train[seed]
+            y_ex = y_train[seed]
+            for j in range(X_train.shape[0] // batch_size):
+                m = j * batch_size
+                n = (j + 1) * batch_size
+                z, a = self.feed_forward(x_ex[m:n])
+                self.back_prop(z, a, y_ex[m:n])
