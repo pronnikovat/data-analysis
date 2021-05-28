@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e8e08551-3c91-4676-b1c6-eb23739ecf55" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../competition/notebooks/answer.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../competition/notebooks/answer.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../competition/notebooks/catboost_info/catboost_training.json" beforeDir="false" afterPath="$PROJECT_DIR$/../competition/notebooks/catboost_info/catboost_training.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../competition/notebooks/catboost_info/learn/events.out.tfevents" beforeDir="false" afterPath="$PROJECT_DIR$/../competition/notebooks/catboost_info/learn/events.out.tfevents" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../competition/notebooks/catboost_info/test/events.out.tfevents" beforeDir="false" afterPath="$PROJECT_DIR$/../competition/notebooks/catboost_info/test/events.out.tfevents" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../competition/notebooks/catboost_info/time_left.tsv" beforeDir="false" afterPath="$PROJECT_DIR$/../competition/notebooks/catboost_info/time_left.tsv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../competition/notebooks/competition.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../competition/notebooks/competition.ipynb" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ProjectId" id="1t9xWLIyIkh76glqeCv1SFmC6v2" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e8e08551-3c91-4676-b1c6-eb23739ecf55" name="Default Changelist" comment="" />
+      <created>1622195136891</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1622195136891</updated>
+    </task>
+    <servers />
+  </component>
+</project>
